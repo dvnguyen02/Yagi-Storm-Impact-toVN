@@ -49,21 +49,17 @@ def process_page(page):
 def main():
     pdf_path = "from1-09to10-09.pdf"
     
-    # Get the total number of pages
-    with pdfplumber.open(pdf_path) as pdf:
-        num_pages = len(pdf.pages)
-
     with open('mttq.csv', 'w', newline='') as csvfile:
         fieldnames = ['date', 'transaction_code', 'amount', 'transaction_detail']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-        for page_number in range(num_pages):
-            with pdfplumber.open(pdf_path) as pdf:
-                page = pdf.pages[page_number]
+        with pdfplumber.open(pdf_path) as pdf:
+            for page in pdf.pages:
                 transactions = process_page(page)
                 for row in transactions:
                     writer.writerow(row)
+                page.flush_cache()
 
 if __name__ == "__main__":
     main()
